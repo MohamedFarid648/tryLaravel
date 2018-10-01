@@ -13,6 +13,7 @@ https://www.rosehosting.com/blog/install-php-7-1-with-nginx-on-an-ubuntu-16-04-v
 
 composer create-project laravel/laravel myFirstLaravelProject
 
+********************************************************
 
 4. a)set project in opt/lampp/htdocs
    run :   composer install (if it doesn't work do (b) first)
@@ -30,6 +31,85 @@ sudo apt-get update
 sudo apt-get install php7.1-xml 
 sudo apt-get install php-mbstring
 
+****************************************
+
+5.structure : 
+vendor folder for dependencies
+.env configure db connection , app link ,...
+storage folder :not publically accessable that means  you  can't access image if you put it there
+gulbfile : to built assets,...
+
+********************************************
+6. php artisan <command> comming with laravel to create controllers , components , ...
+like ng in Angular
+*********************************************
+in resources=>views:
+*********************************************
+7.layout:(ex master)
+in master :
+<html>
+<div>
+  @yield('mySection')//Hello World will display
+  </div>
+</html>
+
+using it :
+in welcome:
+@extends('master')
+@section('mySection') 
+<div>Hello World</div>
+<p> {{ 1==1?"Yes":"No"}}</p>
+ @endsection
 
 
+in header:(partial view)
+<navbar>
+</navbar>
+and in master:
+<html>
+@include('header')
+<div>
+@yield('content)
+</div>
+</html>
+*******************************************************
+8.control structure :
+()
+=>
+@if(true)
+<h1></h1>
+@else
+<h2></h2>
+@endif
 
+=>
+@for($i=0;$i<5;$i++)
+<h3>{{$i + 'fffff'}}</h3>
+@endfor
+
+==>
+@foreach($posts as $post)
+<li>{{$post.id}}</li>
+@endfor
+**************************************************
+9.Xss protection:
+{{"<script>alert('hacking')</script>"}}//will display as a text
+{!!"<script>alert('hacking')</script>"!!} will run 
+
+{{"<p>Hi</p>"}}//will display as a text
+{!!"<p>Hi</p>"!!} will run 
+
+**************************************************
+10.write your css in public=>css
+and in master : <link href="css/myCss.css">
+**************************************************
+11.service container : URL,Response,Route,Session,Request
+you can access them from code direct
+
+ <link href="{{URL::to("css/myCss.css")}}">   =>:: to call static methods
+
+facades in config/app.php in aliases
+ ************************ *******
+ Routing:
+ ************************ *******
+12.  in config/app.php in providers (components that added toapplication  service container)
