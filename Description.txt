@@ -1,4 +1,8 @@
+0. install and open xampp
+https://askubuntu.com/questions/890818/ubuntu-16-04-how-to-start-xampp-control-panel
+
 1. install php :
+
 
 https://www.rosehosting.com/blog/install-php-7-1-with-nginx-on-an-ubuntu-16-04-vps/
 
