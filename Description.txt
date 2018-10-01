@@ -12,3 +12,24 @@ https://www.rosehosting.com/blog/install-php-7-1-with-nginx-on-an-ubuntu-16-04-v
 3. create project :
 
 composer create-project laravel/laravel myFirstLaravelProject
+
+
+4. a)set project in opt/lampp/htdocs
+   run :   composer install (if it doesn't work do (b) first)
+   run :   composer update or composer update --no-scripts  
+   run :   php artisan serve
+
+ then copy .env.example to .env
+ and run : php artisan key:generate to create key 
+
+
+ 
+b) if (a) doesn't work do these first : 
+run : 
+sudo apt-get update
+sudo apt-get install php7.1-xml 
+sudo apt-get install php-mbstring
+
+
+
+
