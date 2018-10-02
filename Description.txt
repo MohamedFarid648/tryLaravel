@@ -113,3 +113,127 @@ facades in config/app.php in aliases
  Routing:
  ************************ *******
 12.  in config/app.php in providers (components that added toapplication  service container)
+
+********************************************
+13.routes folder :
+in web.php:
+Route::get('admin/create',()=>{return view('admin.create')})->name('adminCreateRoute');
+Route::get('post/{id}',($id(closure))=>{return view('blog.post')})->name('postRoute');
+==blog is a folder in views that has post.blade.php
+==name('postRoute') we will navigate to it in :
+header.blade.php :
+ex:<a href="{{route('postRoute',['id'=>10])}}"></a>
+so now if we change the get parameter Route::get('anyOtherRoute',()=>{})
+will return the same View 
+*************************************
+14.you can create header for admin in partials folder
+you can create Layout for admin in Layout folder and so  on 
+**************************************
+15.PostRoute:
+Route::post('admin/create',()=>{return 'ok'})
+**************************************
+16.RouteGroup:
+if you have :
+Route::get('admin/edit/{id}',()=>{})
+Route::get('admin/create',()=>{})
+Route::post('admin/create',()=>{})
+with the same prefix(admin) so you can use group static function in Route facade :
+Route::group(['prefix'=>'admin'],()=>{
+Route::get('edit/{id}',()=>{})
+Route::get('create',()=>{})
+Route::post('create',()=>{})
+
+})
+*******************************************
+17.Request and Response:
+ Excute Route Action
+ Recieve Parameters
+ Perform Logic and Send Response.
+
+return view('') or return redirect()->route('anotherRouteName')
+return Response::json(['key'=>'value'])
+***********************************************
+18.send parameters to view :
+
+return view('editpost',['post'=>$post])
+so in editpost.blade.php: <h1>$post['title']</h1>
+
+***************************************************
+19.Handle Post Request:
+ Route::post('admin/create',(Request $request)=>{
+
+   //Request $request it is a closure ,,it is a Dependency injection instead of Facades
+   redirect()->route('index');
+ })
+ *******************************************
+ 20.DI vs facades :
+
+ function(Request $request){           
+ }
+   $request->input('mail');
+ }
+ //Dpendency Injection and it is a best practice
+
+  or use Facades
+  function(){ Request::input('mail');}
+  ***************************************
+  21.CSRF Attack :
+  <form>
+  <input type ="hidden" name="_token" value="{{csrf_token()}}">
+  </form>
+  to prevent csrf attack so response will send with token and if there is token so it is a bad request
+  
+or
+  <form>
+     {{csrf_field()}}
+  </form>
+
+  ****************************************
+22.Show Temporary Data with Session Facade:
+redirect()->route('index' )->with(
+  'info','edited post with new title '.$request->input('title')
+);
+
+now in index.blade.php:
+@if(Session::has('info'))
+<h1>{{Session::get('info')}}</h1>
+
+Note: with() will display only once when you go to the page
+
+**********************************************************************
+23.Laravel has it's only Validator facade
+or use IIIuminate\Validation\Factory $validate as a DI  
+https://laravel.com/docs/5.3/validation#available-validation-rules
+
+ex:
+Route::post('create',function(IIIuminate\Validation\Factory $validate ){
+$validation=$validate->make($request->all(),[
+  'title'=>'required|min:5',
+  'email'=>'required|min:10'
+]);
+//$validation (it is a Factory)
+if($validation->fails()){
+  return redirect()->back()->withErrors($validation)
+}
+
+redirect()->route('index' )->with(
+  'info','edited post with new title '.$request->input('title')
+);
+
+})
+****************************
+laravel send some helpers variables using with() method
+so in index.php:
+to show errors
+@if(count($errors->all()))
+   <ul>
+   @foreach($errors->all() as $error)
+     <li>{{$error}}</li> //you can see all error messages in resources->lang->validation.php 
+
+
+
+   @endforeach
+   </ul>
+@endif
+*******************************
+you will repeat this code in more than file so you can add it to partials folder you create
