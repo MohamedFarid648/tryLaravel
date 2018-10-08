@@ -222,18 +222,505 @@ redirect()->route('index' )->with(
 
 })
 ****************************
-laravel send some helpers variables using with() method
+24.laravel send some helpers variables using with() method
 so in index.php:
 to show errors
 @if(count($errors->all()))
    <ul>
    @foreach($errors->all() as $error)
      <li>{{$error}}</li> //you can see all error messages in resources->lang->validation.php 
-
-
-
    @endforeach
+          //errors is a helper object send from web.php to view 
+        //all() these are all message  errors   //you can see all error messages in resources->lang->validation.php 
+      
    </ul>
 @endif
 *******************************
 you will repeat this code in more than file so you can add it to partials folder you create
+******************************
+25.Models and controllers :
+php artisan make:controller PostController
+(in app=>Http=>controllers)
+and you can create actions in it
+
+in Model :
+
+class myclass{
+
+  public function getPosts($session){
+    if(!$session->has('posts')){
+      return $this->createPosts($session)
+    }else{
+return $session->get('posts');
+    }
+  }
+  private function createPosts($session){
+  $posts=[];
+  $session->put('posts',$posts);
+  } 
+}
+
+
+in Controller :
+class myController extends Controller{
+  public function getIndex(Store $session){
+
+    $post=new myclass();
+    $posts=$post->getPosts($session);
+    return view('index',['posts'=>$posts,,])
+  }
+}
+
+in route/web.php
+Route::get('/','myController@getIndex')
+
+
+in index.blade.php
+@foreach ($posts as $post)
+//$posts that controller send it 
+<a href="{{route('posts.edit',['id'=>1])}}">
+/*
+now you can replace ['id'=>1]
+with  array_search($post,$posts) will get the id(position) for this post from posts
+*/
+************************************************
+26.How laravel finds Controller?
+
+we start from controller see the name space :App\Http\Controllers
+laravel registers it in app/Providers/RouteServiceProvider.php
+
+so routes/web.php can find it
+ ******************************************
+
+ 27.alternative route syntax :
+ Route::get('/','myController@getIndex')->name('postHome')
+  vs
+Route::get('/',['uses'=>''myController@getIndex','as'=>'postHome'])
+
+  ***************************************
+  array_push($posts,[])
+  *******************************
+  in controller:
+  function postCreate(Store $session,Request $request){
+    $post=new post()
+    $post->editpost(...)
+    $post->createpost(...)
+
+  }
+  ***********************************
+  28.Validation with Controllers:
+  one of utilities methods in laravel :
+  in controller :
+  $this->validate($request,[...])
+
+it will back to the same page if there is an error
+
+  so we didn't need it  in route :
+**********************************************
+29.Database and Migrations :
+Eloquent ORm is a laravel orm system
+
+first :
+change
+DB_DATABASE=schoolDB
+DB_USERNAME=root
+DB_PASSWORD=''
+in .env 
+*******************************
+and add :
+use Illuminate\Support\ServiceProvider;
+use Illuminate\Support\Facades\Schema; 
+    public function boot()
+    {
+        Schema::defaultStringLength(191);
+    }
+in  AppServiceProvider.php
+********************************
+Create Post Model
+$post=new Post();
+$post->title="";
+//title not a property in a class 
+//it is a field in PostTable in the   DB
+
+$post->save();
+$post2=Post::where('title','..')->first(); //like EF in .Net 
+ you can find more methods in :
+
+https://laravel.com/docs/5.7/database
+
+ ******************************************************
+ 30.Migration :
+  in database folder =>migrations folder:
+
+Schema::create('table_name',(Blueprint $table)=>{
+$table->increments('id');//create field id auto-incrementing integer
+$table->timestamps();//create 'created_at' and 'updated_at' fields
+$table->string('title'); // create title field
+Schema::rename('table_old', 'table_new');
+$table->renameColumn('from', 'to');
+$table->dropColumn('votes');
+$table->dropColumn(['votes', 'avatar', 'location']);
+Schema::drop('users');
+
+$table->string('email')->unique(); or $table->unique('email');
+
+$table->index(['account_id', 'created_at']);
+$table->unique('email', 'unique_email');
+
+
+$table->primary('id'); ,
+
+Composite PK :
+$table->primary(['id', 'parent_id']); 
+
+index:
+$table->index('state')
+
+$table->spatialIndex('location');	
+***********************************
+Foreign Key Constraints
+
+$table->unsignedInteger('user_id');
+
+$table->foreign('user_id')->references('id')->on('users');
+
+
+$table->foreign('user_id')
+      ->references('id')->on('users')
+      ->onDelete('cascade');
+
+$table->dropUnique('users_email_unique');	
+
+
+$table->dropForeign('posts_user_id_foreign');
+or
+$table->dropForeign(['user_id']);
+
+
+Schema::enableForeignKeyConstraints();
+
+Schema::disableForeignKeyConstraints();
+
+ });
+
+
+ public function boot()
+{
+    Schema::defaultStringLength(191);
+}
+
+
+
+ you can find more methods in :
+
+https://laravel.com/docs/5.7/migrations
+
+************************************************
+31.Create Model and Migrations:
+php artisan make:model ModelName -m
+that will create the ModelName and its migration file
+**************************************
+create standalone migration :
+php artisan make:migration MigrationName 
+
+MigrationName.php has Up() and down() method
+*******
+32.php artisan migrate //run migrations 
+   php artisan migrate:rollback //latest migration
+   php artisan migrate:reset //all migrations
+   php artisan migrate:refresh //roll back all & re-run migrations
+******************************
+33.laravel assumptions
+ -Post model is posts in DB
+ -PK is 'id' or you can ovwerwrit it : $primaryKey='';
+ -incrementing integer or you can overwrite it : $incrementing = false ;
+ -$timestamps=false to overwrite created_at , updated_at
+ -$connection = 'connection_name' to overwrite connecction in .env file  config folder database.php
+ **********************************
+ 34.
+ Listening For Query Events
+If you would like to receive each SQL query executed by your application, you may use the  listen method. This method is useful for logging queries or debugging. You may register your query listener in a service provider:
+<?php
+
+namespace App\Providers;
+
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\ServiceProvider;
+
+class AppServiceProvider extends ServiceProvider
+{
+
+    public function boot()
+    {
+        DB::listen(function ($query) {
+            // $query->sql
+            // $query->bindings
+            // $query->time
+        });
+    }
+
+    /**
+     * Register the service provider.
+     *
+     * @return void
+     */
+    public function register()
+    {
+        //
+    }
+}
+***************************************
+35.Transaction will be handled by :
+DB::transaction(function () {
+    DB::table('users')->update(['votes' => 1]);
+
+    DB::table('posts')->delete();
+}, 5);//5 is number  of times if there is a deadlock
+********************************************
+36.Queries :
+
+$users = DB::select('select * from users where active = :active',['active' => 1]);
+DB::insert('insert into users (id, name) values (?, ?)', [1, 'Dayle']);
+$affected = DB::update('update users set votes = 100 where name = ?', ['John']);
+$deleted = DB::delete('delete from users');
+DB::statement('drop table users');
+
+
+or
+https://laravel.com/docs/5.7/queries
+$user = DB::table('users')->where('name', 'John')->first();
+$email = DB::table('users')->where('name', 'John')->value('email');
+************************************************
+37.Retrieving A List Of Column Values
+ use Pluck:
+ $titles = DB::table('roles')->pluck('title');
+
+foreach ($titles as $title) {
+    echo $title;
+}
+or
+$roles = DB::table('roles')->pluck('title', 'name');
+
+foreach ($roles as $name => $title) {
+    echo $title;
+}
+************************************************************
+38.Chunking Results
+DB::table('users')->orderBy('id')->chunk(100, function ($users) {
+    foreach ($users as $user) {
+        //
+    }
+});
+
+*****************************************************************
+39. Aggregates
+The query builder also provides a variety of aggregate methods 
+such as count, max, min,  avg, and sum. 
+You may call any of these methods after constructing your query:
+
+$users = DB::table('users')->count();
+$price = DB::table('orders')->max('price');
+***************************************************************
+40. Determining If Records Exist
+Instead of using the count method to determine if any records exist that match your query's constraints, you may use the exists and doesntExist methods:
+
+return DB::table('orders')->where('finalized', 1)->exists();
+
+return DB::table('orders')->where('finalized', 1)->doesntExist();
+********************************************************************
+41.Some Queries :
+$users = DB::table('users')->select('name', 'email as user_email')->get();
+$users = DB::table('users')->distinct()->get();
+$query = DB::table('users')->select('name');
+$users = $query->addSelect('age')->get();
+*********
+Raw Expression :
+$users = DB::table('users')
+                     ->select(DB::raw('count(*) as user_count, status'))
+                     ->where('status', '<>', 1)
+                     ->groupBy('status')
+                     ->get();
+*******************************
+Or use Raw Methods:
+$orders = DB::table('orders')
+                ->selectRaw('price * ? as price_with_tax', [1.0825])
+                ->get();
+with condition :
+$orders = DB::table('orders')
+                ->whereRaw('price > IF(state = "TX", ?, 100)', [200])
+                ->get();
+
+Having :
+$orders = DB::table('orders')
+                ->select('department', DB::raw('SUM(price) as total_sales'))
+                ->groupBy('department')
+                ->havingRaw('SUM(price) > ?', [2500])
+                ->get();
+Order By :
+$orders = DB::table('orders')
+                ->orderByRaw('updated_at - created_at DESC')
+                ->get();
+*****************************
+inner join :
+$users = DB::table('users')
+            ->join('contacts', 'users.id', '=', 'contacts.user_id')
+            ->join('orders', 'users.id', '=', 'orders.user_id')
+            ->select('users.*', 'contacts.phone', 'orders.price')
+            ->get();
+left join :
+$users = DB::table('users')
+            ->leftJoin('posts', 'users.id', '=', 'posts.user_id')
+            ->get();
+
+cross join :
+$users = DB::table('sizes')
+            ->crossJoin('colours')
+            ->get();
+
+Advanced Join :
+DB::table('users')
+        ->join('contacts', function ($join) {
+            $join->on('users.id', '=', 'contacts.user_id')
+                 ->where('contacts.user_id', '>', 5);
+        })
+        ->get();
+****************************
+Skip take:
+$users = DB::table('users')->skip(10)->take(5)->get();
+
+or
+$users = DB::table('users')
+                ->offset(10)
+                ->limit(5)
+                ->get();
+*****************************
+Where :
+$users = DB::table('users')->where('votes', '=', 100)->get();
+or
+$users = DB::table('users')->where('votes', 100)->get();
+$users = DB::table('users')
+                ->where('votes', '>=', 100)
+                ->get();
+
+$users = DB::table('users')
+                ->where('votes', '<>', 100)
+                ->get();
+
+$users = DB::table('users')
+                ->where('name', 'like', 'T%')
+                ->get();
+*********************************
+whereDate,whereMonth ,whereDay,whereYear,whereTime... :
+$users = DB::table('users')
+                ->whereDate('created_at', '2016-12-31')
+                ->get();
+
+$users = DB::table('users')
+                ->whereMonth('created_at', '12')
+              ->get();
+$users = DB::table('users')
+                ->whereTime('created_at', '=', '11:20:45')
+                ->get();
+*********************************              
+Where Exists:
+DB::table('users')
+            ->whereExists(function ($query) {
+                $query->select(DB::raw(1))
+                      ->from('orders')
+                      ->whereRaw('orders.user_id = users.id');
+            })
+            ->get();
+will be :
+select * from users
+where exists (
+    select 1 from orders where orders.user_id = users.id
+)
+
+Where (Json Column):
+To query a JSON column, use the -> operator
+$users = DB::table('users')
+                ->where('preferences->dining->meal', 'salad')
+                ->get();
+order by :
+$users = DB::table('users')
+                ->orderBy('name', 'desc')
+                ->get();
+
+latest :
+$user = DB::table('users')
+                ->latest()
+                ->first();
+
+Group by :
+$users = DB::table('users')
+                ->groupBy('first_name', 'status')
+                ->having('account_id', '>', 100)
+                ->get();
+                
+
+insert :
+DB::table('users')->insert([
+    ['email' => 'taylor@example.com', 'votes' => 0],
+    ['email' => 'dayle@example.com', 'votes' => 0]
+]);
+*************************************************
+If the table has an auto-incrementing id,
+ use the insertGetId method to insert a record and
+  then retrieve the ID:
+
+$id = DB::table('users')->insertGetId(
+    ['email' => 'john@example.com', 'votes' => 0]
+);
+
+*****************************
+Update :
+
+DB::table('users')
+            ->where('id', 1)
+            ->update(['votes' => 1]);
+
+Update Json Column :
+DB::table('users')
+            ->where('id', 1)
+            ->update(['options->enabled' => true]);
+
+
+**************************************
+Increment&Decrement instead of change column value :
+DB::table('users')->increment('votes');
+
+DB::table('users')->increment('votes', 5);
+
+DB::table('users')->decrement('votes');
+
+DB::table('users')->decrement('votes', 5);
+
+DB::table('users')->increment('votes', 1, ['name' => 'John']);
+***********************************************
+Delete :
+DB::table('users')->delete();
+
+DB::table('users')->where('votes', '>', 100)->delete();
+
+Trncate :
+DB::table('users')->truncate();
+************************************************
+Pessimistic Locking
+The query builder also includes a few functions 
+to help you do "pessimistic locking" on 
+your select statements. To run the statement with
+ a "shared lock", you may use the sharedLock method on a query.
+  A shared lock prevents the selected rows from being modified until your transaction commits:
+
+DB::table('users')->where('votes', '>', 100)->sharedLock()->get();
+
+Alternatively, you may use the lockForUpdate method. 
+A "for update" lock prevents the rows from being modified or from being selected with another shared lock:
+
+DB::table('users')->where('votes', '>', 100)->lockForUpdate()->get();
+
+**********************************************************
+More Here :
+https://laravel.com/docs/5.7/queries
+
+**********************************************************

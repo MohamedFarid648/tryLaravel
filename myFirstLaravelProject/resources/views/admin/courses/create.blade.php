@@ -12,13 +12,7 @@
     </div>
     <div class="col-8">
 
-            <form>
-
-                    <div class="form-group">
-                    <label for="Id">ID</label>
-                    <input type="number" class="form-control" name="Id" />
-                    </div>
-
+            <form action="{{route('create_course')}}" method="POST">
 
                     <div class="form-group">
                     <label for="Name">Name</label>
@@ -26,8 +20,8 @@
                     </div>
 
                     <div class="form-group">
-                    <label for="Price">Price</label>
-                    <input type="number" class="form-control" name="Price" />
+                    <label for="Grade">Grade</label>
+                    <input type="number" class="form-control" name="Grade" />
                     </div>
                   
                     <div class="form-group">
@@ -41,17 +35,17 @@
                     </div>
 
                     <div class="form-group">
-                    <label for="imgUrl">Img Url</label>
-                    <input type="text" class="form-control" name="imgUrl" value="https://homepages.cae.wisc.edu/~ece533/images/fruits.png" />
+                    <label for="imgURL">Img Url</label>
+                    <input type="text" class="form-control" name="imgURL" value="https://homepages.cae.wisc.edu/~ece533/images/fruits.png" />
                     </div>
 
+                      {{csrf_field()}}
                       <input type="submit"  class="btn btn-primary">
 
                       
                     
                     </form>
-    
-        </div>
+    </div>
         
 </div>
 @endsection

@@ -100,3 +100,8 @@ nav {
   border-right-color: orange;
   right: 10px; 
 }
+
+.row{
+
+  min-height: 10px;
+}
