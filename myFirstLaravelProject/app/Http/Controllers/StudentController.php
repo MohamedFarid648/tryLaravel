@@ -9,12 +9,11 @@ class StudentController extends Controller
 {
 
 
-
-    public function getIndex(Store $session)
+    public function getIndex()
     {
 
         $student = new Student();
-        $students = $student->getAllstudents($session);
+        $students = $student->getAllStudents();
         return view('admin.students.index', ['students' => $students]);
 
     }
@@ -30,21 +29,31 @@ class StudentController extends Controller
             'Name' => 'required',
 
         ]);
+
         $student = new Student();
-        $student_request = ['Id'=>'','Name'=> $request->input('Name'), 'Notes'=>$request->input('Notes'), 'imgURL'=>$request->input('imgURL')];
-        $student->addstudent($session, $student_request);
+        $student_request = ['Name' => $request->input('Name'), 'Notes' => $request->input('Notes'),  'imgURL' => $request->input('imgURL')];
+        $student->addStudent($student_request);
         return redirect()->route('studentsHome')->with('create_student_information', 'Student (' . $request["Name"] . ' ) has been already Created');
 
     }
 
-    public function getEdit(Store $session, $id)
+    public function getEdit($id)
     {
 
 
         $student = new Student();
-        $student = $student->getstudent($session, $id);
-
+        $student = $student->getStudent($id);
         return view('admin.students.edit', ['student' => $student, 'studentId' => $id]);
+
+    }
+
+    public function getDelete($id)
+    {
+
+
+        $student = new Student();
+        $student = $student->getStudent($id);
+        return view('admin.students.delete', ['student' => $student, 'studentId' => $id]);
 
     }
 
@@ -54,11 +63,22 @@ class StudentController extends Controller
             'Name' => 'required|min:3',
         ]);
         $student = new Student();
-        $student_request = ['Id'=>$request->input('id'),'Name'=> $request->input('Name'), 'Notes'=>$request->input('Notes'), 'imgURL'=>$request->input('imgURL')];
-        $student->editstudent($session, $request->input('id'), $student_request);
-        return redirect()->route('studentsHome')->with('create_student_information', 'Student (' . $request["Name"] . ' ) has been already Edited');
+        $student_request = ['Name' => $request->input('Name'), 'Notes' => $request->input('Notes'), 'imgURL' => $request->input('imgURL')];
+        $student->editStudent($request->input('id'), $student_request);
+        return redirect()->route('studentsHome')->with('Student_information', 'Student (' . $request["Name"] . ' ) has been already Edited');
+
 
     }
+
+
+    public function postDelete(Request $request)
+    {
+        $student = new Student();
+        $student->deleteStudent($request->input('id'), $request->input('Name'));
+        return redirect()->route('studentsHome')->with('Student_information', 'Student (' . $request["Name"] . ' ) has been already Deleted');
+
+    }
+
 
 
 }
@@ -66,4 +86,4 @@ class StudentController extends Controller
 
 
 
-*/
+ */

@@ -2,10 +2,10 @@
 @extends ('layout.admin')
 @section('content')
 
-    @if (Session::has('create_course_information'))
+    @if (Session::has('course_information'))
             <div class ="row">
             <p class ="bg-primary text-center"> 
-                {{Session::get('create_course_information')}}
+                {{Session::get('course_information')}}
             </p>
             
             </div>
@@ -37,7 +37,9 @@
                         <td>{{$course->Description}} </td>
 
                         <td>
-                        <a href = "{{route('edit_course',['id'=> $course->id])}}"> Edit </a>
+                        <a href = "{{route('edit_course',['id'=> $course->id])}}"> Edit </a> |
+                        <a href = "{{route('delete_course',['id'=> $course->id])}}"> Delete </a>
+
 
                         </td>
                 </tr>

@@ -4,12 +4,17 @@ namespace App;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\DB;
 
 class Course extends Model
 {
 
     protected $fillable = ['Name', 'Description', 'Grade', 'Quantity', 'imgURL'];
-//to make them mass-assignable.
+    /*
+    
+    So, to get started, you should define which model attributes you want to make mass assignable. 
+    You may do this using the $fillable property on the model.
+    */
 
     public static $count = 3;
 
@@ -18,93 +23,95 @@ class Course extends Model
 
         return ++self::$count;
     }
-    public function getAllCourses($session)
+    public function getAllCourses()
     {
 
-        if (!$session->has('session_courses2')) {
-            return $this->selectAllCourses($session);
-        }
-        return $session->get('session_courses2');
+        $courses =Course::all();//all(); atatic method coming from Eloquent ORM
+         //DB::table('courses')->select()->get();//$course->getAllCourses($session);
+        return $courses;
+
     }
 
 
-    public function getCourse($session, $id)
+    public function getCourse($id)
     {
+        //$course = DB::table('courses')->where(['id' => $id])->get();
+       
+        //will return array of courses has one course
+        /*
+        if $id==2
+        [
+                    {
+                    "id": 2,
+                    "Name": "Angular",
+                    "Description": "Front End Library",
+                    "Grade": "50",
+                    "imgURL": "https://homepages.cae.wisc.edu/~ece533/images/fruits.png",
+                    "created_at": "2018-10-08 15:28:44",
+                    "updated_at": "2018-10-08 15:28:44",
+                    "Quantity": "52"
+                    }
+        ]
+        
+         */
+        //return $course[0];
 
-        $courses = $session->get('session_courses2');
-        $c_s = collect($courses);
-
-        foreach ($courses as $course) {
-            if ($course['Id'] == $id) {
-                return $course;
-            }
-        }
+        $course=Course::find($id);//Course::where(['id' => $id])->first();
+        return $course;
     }
 
 
-    public function addCourse($session, $course)
+    public function addCourse($course_request)
     {
- 
-        /* if (!$session->has('session_courses2')) {
-             $this->selectAllCourses($session);
-         }
-         */
-         /*
-         echo $session->get('session_courses2');
-         [{"Id":"1","Name":"C","Description":"PL1","Grade":"100","Quantity":"200","imgURL":"https:\/\/homepages.cae.wisc.edu\/~ece533\/images\/fruits.png"},
-         {"Id":"2","Name":"C++","Description":"PL2","Grade":"100","Quantity":"150","imgURL":"https:\/\/homepages.cae.wisc.edu\/~ece533\/images\/fruits.png"},
-         {"Id":"3","Name":"C#","Description":"PL3","Grade":"100","Quantity":"120","imgURL":"https:\/\/homepages.cae.wisc.edu\/~ece533\/images\/fruits.png"}
-         ]
-         */
 
-        $course_db = new Course(['Name' => $course['Name'], 'Description' => $course['Description'], 'Grade' => $course['Grade'], 'Quantity' => $course['Quantity'], 'imgURL' => $course['imgURL']]);
+        $course_db = new Course($course_request);
         $course_db->save();
-          /*
-         $course['Id'] =$this->getCount();
-         $courses = $session->get('session_courses2');
-         //array_push($courses, $course);
-         $courses[] = $course;
-         $session->put('session_courses2', $courses);
-         */
 
 
     }
 
 
-    public function editCourse($session, $id, $new_course)
-    {
-
-        if (!$session->has('session_courses2')) {
-            $this->selectAllCourses($session);
-        }
-        $courses = $session->get('session_courses2');
-        $courses_count = 0;
-        foreach ($courses as $course) {
-            if ($course['Id'] == $id) {
-                $courses[$courses_count] = $new_course;
-            }
-            $courses_count++;
-
-        }
-        $session->put('session_courses2', $courses);
-
-    }
-
-
-    private function selectAllCourses($session)
+    public function editCourse($id, $new_course)
     {
 
 
-        $courses =
-            [
-            ['Id' => '1', 'Name' => 'C', 'Description' => 'PL1', 'Grade' => '100', 'Quantity' => '200', 'imgURL' => 'https://homepages.cae.wisc.edu/~ece533/images/fruits.png'],
-            ['Id' => '2', 'Name' => 'C++', 'Description' => 'PL2', 'Grade' => '100', 'Quantity' => '150', 'imgURL' => 'https://homepages.cae.wisc.edu/~ece533/images/fruits.png'],
-            ['Id' => '3', 'Name' => 'C#', 'Description' => 'PL3', 'Grade' => '100', 'Quantity' => '120', 'imgURL' => 'https://homepages.cae.wisc.edu/~ece533/images/fruits.png']
-        ];
+        $row_affected = Course::where(['id' => $id])->update($new_course);//DB::table('courses')->where(['id' => $id])->update($new_course);
 
+        return $row_affected; 
 
+        /*
+        
+        
+        or
+         $course=Course::find($id);
+         $course->Name=$new_course['Name'];
+         $course->Description=$new_course['Description'];
+         $course->Grade=$new_course['Grade'];
+         $course->Quantity=$new_course['Quantity'];
+         $course->imgURL=$new_course['imgURL'];
+         $course->save();
 
-        $session->put('session_courses2', $courses);
+        */
     }
+
+
+    public function deleteCourse($id, $Name)
+    {
+
+
+        $row_affected = DB::table('courses')->where(['id' => $id,'Name'=>$Name])->delete();
+
+        return $row_affected; 
+
+        /*
+        
+        
+        or
+         $course=Course::find($id);
+         $course->delete();
+        */
+    }
+
+
 }
  

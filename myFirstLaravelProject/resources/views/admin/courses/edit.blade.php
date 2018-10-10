@@ -16,23 +16,35 @@
 
                     <div class="form-group">
                     <label for="Name">Name</label>
-                    <input type="text" class="form-control" name="Name"  value="{{$course['Name']}}" />
+                    <input type="text" class="form-control" name="Name"  value="{{$course->Name}}" />
                     </div>
 
                     <div class="form-group">
                     <label for="Grade">Grade</label>
-                    <input type="number" class="form-control" name="Grade" value="{{$course['Grade']}}" />
+                    <input type="number" class="form-control" name="Grade" value="{{$course->Grade}}" />
                     </div>
                   
                     <div class="form-group">
                     <label for="Description">Description</label>
-                    <input type="text" class="form-control" name="Description" value="{{$course['Description']}}" />
+                    <input type="text" class="form-control" name="Description" value="{{$course->Description}}" />
                     </div>
 
                    <div class="form-group">
                     <label for="Quantity">Quantity</label>
-                    <input type="number" class="form-control" name="Quantity" value="{{$course['Quantity']}}" />
+                    <input type="number" class="form-control" name="Quantity" value="{{$course->Quantity}}" />
                     </div>
+
+
+                    <div class="form-group">
+                      <label for="imgURL">Img Url</label>
+                      <input type="text"   class="form-control" name="imgURL" value="{{$course->imgURL}}" />
+                      </div>
+
+
+                      <div class="form-group">
+                        <img  src="{{$course->imgURL}}" />
+                      </div>
+
 
                     <input type="hidden"  name="id" value="{{$courseId}}" />
 

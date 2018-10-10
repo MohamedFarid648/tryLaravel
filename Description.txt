@@ -32,7 +32,13 @@ sudo apt-get install php7.1-xml
 sudo apt-get install php-mbstring
 
 ****************************************
+What is Symfony
+« Symfony is a set of PHP Components, a Web Application framework, a Philosophy, and a Community — all working together in harmony. »
+Symfony Framework
+The leading PHP framework to create websites and web applications. Built on top of the Symfony Components.
 
+Laravel is a Symfony project
+*****************************************
 5.structure : 
 vendor folder for dependencies
 .env configure db connection , app link ,...
@@ -164,6 +170,8 @@ so in editpost.blade.php: <h1>$post['title']</h1>
 
    //Request $request it is a closure ,,it is a Dependency injection instead of Facades
    redirect()->route('index');
+   redirect()->back();
+
  })
  *******************************************
  20.DI vs facades :
@@ -213,6 +221,7 @@ $validation=$validate->make($request->all(),[
 ]);
 //$validation (it is a Factory)
 if($validation->fails()){
+  redirect()->back();
   return redirect()->back()->withErrors($validation)
 }
 
@@ -317,7 +326,11 @@ it will back to the same page if there is an error
 
   so we didn't need it  in route :
 **********************************************
+
+*************************************
 29.Database and Migrations :
+Laravel Eloquent ORM(Object Relational Mapping)
+ provides important methods to you to access the db .
 Eloquent ORm is a laravel orm system
 
 first :
@@ -347,6 +360,15 @@ $post2=Post::where('title','..')->first(); //like EF in .Net
  you can find more methods in :
 
 https://laravel.com/docs/5.7/database
+
+Laravel Assumptions:
+
+ex:
+class Post => posts in DB
+ 'id' is default pk =>to change $primaryKey='Name';
+ ...
+ so you can access $post=new Post();
+ $post->title=''; //title should be a column in db
 
  ******************************************************
  30.Migration :
@@ -477,6 +499,7 @@ DB::transaction(function () {
     DB::table('posts')->delete();
 }, 5);//5 is number  of times if there is a deadlock
 ********************************************
+*********************************************
 36.Queries :
 
 $users = DB::select('select * from users where active = :active',['active' => 1]);
@@ -491,7 +514,7 @@ https://laravel.com/docs/5.7/queries
 $user = DB::table('users')->where('name', 'John')->first();
 $email = DB::table('users')->where('name', 'John')->value('email');
 ************************************************
-37.Retrieving A List Of Column Values
+Retrieving A List Of Column Values
  use Pluck:
  $titles = DB::table('roles')->pluck('title');
 
@@ -505,7 +528,7 @@ foreach ($roles as $name => $title) {
     echo $title;
 }
 ************************************************************
-38.Chunking Results
+Chunking Results
 DB::table('users')->orderBy('id')->chunk(100, function ($users) {
     foreach ($users as $user) {
         //
@@ -513,7 +536,7 @@ DB::table('users')->orderBy('id')->chunk(100, function ($users) {
 });
 
 *****************************************************************
-39. Aggregates
+ Aggregates
 The query builder also provides a variety of aggregate methods 
 such as count, max, min,  avg, and sum. 
 You may call any of these methods after constructing your query:
@@ -724,3 +747,104 @@ More Here :
 https://laravel.com/docs/5.7/queries
 
 **********************************************************
+Crud operations:
+select :
+
+ all data :
+$courses =Course::all();
+//all(); atatic method coming from Eloquent ORM
+or //DB::table('courses')->select()->get();//$course->getAllCourses($session);
+
+
+ one data :
+        $course=Course::find($id);//Course::where(['id' => $id])->first();
+        $course = DB::table('courses')->where(['id' => $id])->get();//return array
+        
+insert :
+
+        $course_db = new Course($course_request);
+        $course_db->save();
+  or 
+        DB::table('users')->insert([
+          ['email' => 'taylor@example.com', 'votes' => 0],
+          ['email' => 'dayle@example.com', 'votes' => 0]
+      ]);
+
+delete:
+     $course=Course::find($id);
+     $course->delete();
+update:
+         $course=Course::find($id);
+         $course->Name=$new_course['Name'];
+         $course->Description=$new_course['Description'];
+         $course->Grade=$new_course['Grade'];
+         $course->Quantity=$new_course['Quantity'];
+         $course->imgURL=$new_course['imgURL'];
+         $course->save();
+
+        or $row_affected = Course::where(['id' => $id])->update($new_course);//DB::table('courses')->where(['id' => $id])->update($new_course);
+********************************************
+37.soft deleting :
+https://laravel.com/docs/5.7/eloquent#soft-deleting
+
+*******************************************
+38.Laravel Seeder :
+to seed your database
+
+to create some seed data(dummy data for testing ,...)
+
+=>
+php artisan make:seed PostSeeder 
+in run function :
+$post=new \App\Post();
+$post->Name='';...
+$post->save();
+
+=>in DatabaseSeeder.php:
+
+$this->call(PostSeeder:class)//path the class to the function //class is a static method
+
+=>
+php artisan db:seed
+or 
+php artisan migrate --seed  //to run seed,migrate in the same time
+*********************************************
+39.
+  protected $fillable = ['Name', 'Description', 'Grade', 'Quantity', 'imgURL'];
+    /*
+    
+    So, to get started, you should define which model attributes you want to make mass assignable. 
+    You may do this using the $fillable property on the model.
+    */
+https://laravel.com/docs/5.7/eloquent#retrieving-single-models
+*******************************************
+40.RelationShips :
+One2Many:
+
+Post has many likes but  like has one post.
+
+Post{
+  function likes(){return $this->hasMany('App\Like','post_id or any name you want')}
+}
+Like{
+  function post(){return $tis-<belongsTo('App\Post');}
+}
+and should likes table has (post_id) column
+
+
+in Query :
+ 
+ select :
+
+ $likes=Post::find(5)->likes;
+ $likes=Post::find(5)->likes()->orderBy('')->get();
+
+ insert :
+ $post=Post::find(10);
+ $like=new Like();
+ ...
+ $post->likes()->save($like); //save this like to the DB
+  
+*****************
+leazy loading vs eager loading :
+https://laravel.com/docs/5.7/eloquent-relationships#eager-loading

@@ -29,10 +29,12 @@
                     
                 @foreach ($students as $student)
                 <tr>
-                        <td>{{$student['Name']}} </td>
-                        <td>{{$student['Notes']}} </td>
+                        <td>{{$student->Name}} </td>
+                        <td>{{$student->Notes}} </td>
                         <td>
-                        <a href = "{{route('edit_student',['id'=> $student['Id']])}}"> Edit </a>
+                        <a href = "{{route('edit_student',['id'=> $student->id])}}"> Edit </a> |
+                        <a href = "{{route('delete_student',['id'=> $student->id])}}"> Delete </a>
+
 
                         </td>
                 </tr>

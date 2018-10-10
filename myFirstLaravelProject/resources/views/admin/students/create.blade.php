@@ -30,7 +30,7 @@
                     </div>
 
                       {{csrf_field()}}
-                      <input type="submit"  class="btn btn-primary">
+                      <input type="submit"  value="Create" class="btn btn-primary">
 
                       
                     

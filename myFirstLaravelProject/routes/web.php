@@ -15,10 +15,10 @@
 Route::get('/', function () {
     return view('master.welcome');
 })->name('userHome');*/
-Route::get('/', ['uses'=>'MasterController@getIndex','as'=>'userHome']);
-Route::get('login', ['uses'=>'MasterController@getLogin','as'=>'login']);
-Route::get('register', ['uses'=>'MasterController@getRegister','as'=>'register']);
-Route::get('admin', ['uses'=>'MasterController@getAdmin','as'=>'adminHome']);
+Route::get('/', ['uses' => 'MasterController@getIndex', 'as' => 'userHome']);
+Route::get('login', ['uses' => 'MasterController@getLogin', 'as' => 'login']);
+Route::get('register', ['uses' => 'MasterController@getRegister', 'as' => 'register']);
+Route::get('admin', ['uses' => 'MasterController@getAdmin', 'as' => 'adminHome']);
 
 
 
@@ -70,7 +70,7 @@ Route::group(['prefix' => 'courses'], function () {
 
 
 });
-*/
+ */
 
 Route::group(['prefix' => 'courses'], function () {
     Route::get('', ['uses' => 'CourseController@getIndex', 'as' => 'coursesHome']);
@@ -78,6 +78,10 @@ Route::group(['prefix' => 'courses'], function () {
     Route::post('create', ['uses' => 'CourseController@postCreate', 'as' => 'create_course']);
     Route::get('edit/{id}', ['uses' => 'CourseController@getEdit', 'as' => 'edit_course']);
     Route::post('edit', ['uses' => 'CourseController@postEdit', 'as' => 'post_edit_course']);
+    Route::get('delete/{id}', ['uses' => 'CourseController@getDelete', 'as' => 'delete_course']);
+    Route::post('delete', ['uses' => 'CourseController@postDelete', 'as' => 'post_delete_course']);
+
+
 });
 
 
@@ -88,4 +92,7 @@ Route::group(['prefix' => 'students'], function () {
     Route::post('create', ['uses' => 'StudentController@postCreate', 'as' => 'create_student']);
     Route::get('edit/{id}', ['uses' => 'StudentController@getEdit', 'as' => 'edit_student']);
     Route::post('edit', ['uses' => 'StudentController@postEdit', 'as' => 'post_edit_student']);
+    Route::get('delete/{id}', ['uses' => 'StudentController@getDelete', 'as' => 'delete_student']);
+    Route::post('delete', ['uses' => 'StudentController@postDelete', 'as' => 'post_delete_student']);
+
 });

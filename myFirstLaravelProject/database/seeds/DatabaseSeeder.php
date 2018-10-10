@@ -12,5 +12,7 @@ class DatabaseSeeder extends Seeder
     public function run()
     {
         // $this->call(UsersTableSeeder::class);
-    }
+
+        $this->call(CourseTableSeeder::class);
+    }//php artisan db:seed   or php artisan migrate --seed 
 }
