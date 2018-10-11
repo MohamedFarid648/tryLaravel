@@ -827,7 +827,7 @@ Post{
   function likes(){return $this->hasMany('App\Like','post_id or any name you want')}
 }
 Like{
-  function post(){return $tis-<belongsTo('App\Post');}
+  function post() {return $tis-<belongsTo('App\Post');}
 }
 and should likes table has (post_id) column
 
@@ -845,6 +845,58 @@ in Query :
  ...
  $post->likes()->save($like); //save this like to the DB
   
+
+  Delete:
+  $post=Post::find(10);
+  $post->likes()->delete();
+  $post->delete();
 *****************
 leazy loading vs eager loading :
 https://laravel.com/docs/5.7/eloquent-relationships#eager-loading
+
+*******************************************
+Many2Many :
+Post{
+  function tags(){return $this->belongsToMany('App\Tag','table_name','post_id','tag_id')->withTimestamps();}
+}
+Tag{
+  function post(){return $tis->belongsToMany('App\Post''table_name','tag_id','post_id')->withTimestamps();}
+}
+
+create pivot table post_tag {id,post_id,tag_id}
+
+in Query :
+ 
+ select :
+
+ $tags=Post::find(5)->tags;
+ $tags=Post::find(5)->tags()->orderBy('')->get();
+
+ insert :
+ $post=Post::find(10);
+ $tagID=10;
+
+ ...
+ $post->tags()->attach($tagID);//tagID or object
+ $post->tags()->attach([1,2,...]);
+
+  //save this tag and post id to pivot table to the DB
+  
+
+  Delete:
+  $post=Post::find(10);
+  $post->tags()->detach();//all
+  $post->tags()->detach($tagId);//
+
+update:
+$post->tags()->detach();//delete all and then add new ones 
+$post->tags()->attach($request->input('tags')===null?[]:$request->input('tags'));
+/*
+
+$request->input('tags')===null?[]:$request->input('tags')
+coming from 
+<input type='checkbox' name='tags[]'>
+*/
+best sol:
+$post->tags()->sync();
+//because if there is no changes

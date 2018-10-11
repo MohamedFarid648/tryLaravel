@@ -19,6 +19,11 @@ class Student extends Model
         return ++self::$count;
     }
 
+    public function courses(){
+
+        return $this->belongsToMany('App\Student','student_course','student_id','course_id');
+    }
+
 
     public function getAllStudents()
     {

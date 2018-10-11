@@ -5,6 +5,7 @@ namespace App;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Course extends Model
 {
@@ -14,10 +15,20 @@ class Course extends Model
     
     So, to get started, you should define which model attributes you want to make mass assignable. 
     You may do this using the $fillable property on the model.
-    */
+     */
+
+    //1.To use SoftDelete
+    use SoftDeletes;
+    protected $dates = ['deleted_at'];
+
 
     public static $count = 3;
 
+
+    public function students(){
+
+        return $this->belongsToMany('App\Student','student_course','course_id','student_id');
+    }
     public function getCount()
     {
 
@@ -26,11 +37,20 @@ class Course extends Model
     public function getAllCourses()
     {
 
-        $courses =Course::all();//all(); atatic method coming from Eloquent ORM
+        $courses = Course::all();//all(); atatic method coming from Eloquent ORM
          //DB::table('courses')->select()->get();//$course->getAllCourses($session);
         return $courses;
 
     }
+
+    public function getAllDeletedCourses()
+    {
+
+        $deletedCourses = Course::onlyTrashed()->get();
+        //Course::withTrashed()->get();  //will get all 
+        return $deletedCourses;
+    }
+
 
 
     public function getCourse($id)
@@ -56,7 +76,7 @@ class Course extends Model
          */
         //return $course[0];
 
-        $course=Course::find($id);//Course::where(['id' => $id])->first();
+        $course = Course::find($id);//Course::where(['id' => $id])->first();
         return $course;
     }
 
@@ -91,7 +111,7 @@ class Course extends Model
          $course->imgURL=$new_course['imgURL'];
          $course->save();
 
-        */
+         */
     }
 
 
@@ -99,17 +119,41 @@ class Course extends Model
     {
 
 
-        $row_affected = DB::table('courses')->where(['id' => $id,'Name'=>$Name])->delete();
+        $row_affected = Course::where('id', $id)->delete(); //DB::table('courses')->where(['id' => $id,'Name'=>$Name])->delete();
 
         return $row_affected; 
 
+        //delete_at will only changed but course will not be deleted
         /*
         
         
         or
          $course=Course::find($id);
          $course->delete();
-        */
+         */
+    }
+
+
+    public function unDeleteCourse($id)
+    {
+
+        $course = Course::onlyTrashed()->where('id', $id)->get()->first();
+        
+        $course->restore();
+
+        return $course;
+
+        //Course::withTrashed()->where('id', $id)->restore();
+    }
+
+    public function forceDeleteCourse($id)
+    {
+
+        $course = Course::onlyTrashed()->where('id', $id)->get()->first();
+        
+        $course->forceDelete();
+
+        return $course;
     }
 
 

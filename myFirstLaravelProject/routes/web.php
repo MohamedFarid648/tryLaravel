@@ -80,6 +80,9 @@ Route::group(['prefix' => 'courses'], function () {
     Route::post('edit', ['uses' => 'CourseController@postEdit', 'as' => 'post_edit_course']);
     Route::get('delete/{id}', ['uses' => 'CourseController@getDelete', 'as' => 'delete_course']);
     Route::post('delete', ['uses' => 'CourseController@postDelete', 'as' => 'post_delete_course']);
+    Route::get('undelete/{id}', ['uses' => 'CourseController@getUnDelete', 'as' => 'undelete_course']);
+    Route::get('forceDelete/{id}', ['uses' => 'CourseController@getForceDeleteCourse', 'as' => 'force_delete_course']);
+
 
 
 });

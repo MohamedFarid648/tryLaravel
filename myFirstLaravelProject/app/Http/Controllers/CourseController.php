@@ -14,7 +14,9 @@ class CourseController extends Controller
 
         $course = new Course();
         $courses = $course->getAllCourses();
-        return view('admin.courses.index', ['courses' => $courses]);
+        $deletedCourses=$course->getAllDeletedCourses();
+
+        return view('admin.courses.index', ['courses' => $courses,'deletedCourses'=>$deletedCourses]);
 
     }
 
@@ -70,9 +72,6 @@ class CourseController extends Controller
             'Name' => 'required|min:3',
         ]);
         $course = new Course();
-
-
-
         $course_request = ['Name' => $request->input('Name'), 'Description' => $request->input('Description'), 'Grade' => $request->input('Grade'), 'Quantity' => $request->input('Quantity'), 'imgURL' => $request->input('imgURL')];
         $course->editCourse($request->input('id'), $course_request);
         return redirect()->route('coursesHome')->with('course_information', 'Course (' . $request["Name"] . ' ) has been already Edited');
@@ -85,6 +84,26 @@ class CourseController extends Controller
         $course = new Course();
         $course->deleteCourse($request->input('id'), $request->input('Name'));
         return redirect()->route('coursesHome')->with('course_information', 'Course (' . $request["Name"] . ' ) has been already Deleted');
+
+    }
+
+    public function getUnDelete($id)
+    {
+        $course = new Course();
+        $course=$course->unDeleteCourse($id);
+        
+        return redirect()->route('coursesHome')->with('course_information', 'Course (' . $course->Name . ' ) has been already Un Deleted');
+
+    }
+
+    
+    public function getForceDeleteCourse($id)
+    {
+        $course = new Course();
+
+        $course=$course->forceDeleteCourse($id);
+        
+        return redirect()->route('coursesHome')->with('course_information', 'Course (' . $course->Name . ' ) has been already Deleted ForEver');
 
     }
 
