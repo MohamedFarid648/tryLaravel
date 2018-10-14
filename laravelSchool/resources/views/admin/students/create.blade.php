@@ -29,6 +29,18 @@
                     <input type="text" class="form-control" name="imgURL" value="https://homepages.cae.wisc.edu/~ece533/images/fruits.png" />
                     </div>
 
+
+                    Courses
+
+                    @foreach($courses as $course)
+
+                    <div class="form-check">
+                      <input class="form-check-input" name="student_courses[]" type="checkbox" value="{{$course->id}}" >
+                      <label class="form-check-label" for="defaultCheck1">
+                        {{$course->Name}}
+                      </label>
+                    </div>
+                    @endforeach
                       {{csrf_field()}}
                       <input type="submit"  value="Create" class="btn btn-primary">
 

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Session\Store;
 use App\Student;
+use App\Course;
 
 class StudentController extends Controller
 {
@@ -20,7 +21,10 @@ class StudentController extends Controller
 
     public function getCreate()
     {
-        return view('admin.students.create');
+
+        $course = new Course();
+        $courses = $course->getAllCourses();
+        return view('admin.students.create', ['courses' => $courses]);
     }
 
     public function postCreate(Store $session, Request $request)
@@ -31,8 +35,10 @@ class StudentController extends Controller
         ]);
 
         $student = new Student();
-        $student_request = ['Name' => $request->input('Name'), 'Notes' => $request->input('Notes'),  'imgURL' => $request->input('imgURL')];
-        $student->addStudent($student_request);
+        $student_request = ['Name' => $request->input('Name'), 'Notes' => $request->input('Notes'), 'imgURL' => $request->input('imgURL')];
+        $student_courses = $request->input('student_courses');
+
+        $student->addStudent($student_request, $student_courses);
         return redirect()->route('studentsHome')->with('create_student_information', 'Student (' . $request["Name"] . ' ) has been already Created');
 
     }
@@ -43,7 +49,10 @@ class StudentController extends Controller
 
         $student = new Student();
         $student = $student->getStudent($id);
-        return view('admin.students.edit', ['student' => $student, 'studentId' => $id]);
+        $course = new Course();
+        $courses = $course->getAllCourses();
+
+        return view('admin.students.edit', ['student' => $student, 'studentId' => $id,'courses' => $courses]);
 
     }
 
@@ -64,7 +73,8 @@ class StudentController extends Controller
         ]);
         $student = new Student();
         $student_request = ['Name' => $request->input('Name'), 'Notes' => $request->input('Notes'), 'imgURL' => $request->input('imgURL')];
-        $student->editStudent($request->input('id'), $student_request);
+        $student_courses = $request->input('student_courses');
+        $student->editStudent($request->input('id'), $student_request, $student_courses);
         return redirect()->route('studentsHome')->with('Student_information', 'Student (' . $request["Name"] . ' ) has been already Edited');
 
 

@@ -14,6 +14,10 @@ https://www.rosehosting.com/blog/install-php-7-1-with-nginx-on-an-ubuntu-16-04-v
 composer create-project laravel/laravel myFirstLaravelProject
 
 ********************************************************
+How to setup a Virtual Host locally with XAMPP in Ubuntu
+
+https://ourcodeworld.com/articles/read/302/how-to-setup-a-virtual-host-locally-with-xampp-in-ubuntu
+*****************************************
 
 4. a)set project in opt/lampp/htdocs
    run :   composer install (if it doesn't work do (b) first)
@@ -900,3 +904,13 @@ coming from
 best sol:
 $post->tags()->sync();
 //because if there is no changes
+
+********************************************
+
+how-do-i-get-the-query-builder-to-output-its-raw-sql-query-as-a-string :
+https://stackoverflow.com/questions/18236294/how-do-i-get-the-query-builder-to-output-its-raw-sql-query-as-a-string
+
+DB::enableQueryLog();
+//Query
+dd(DB::getQueryLog());
+

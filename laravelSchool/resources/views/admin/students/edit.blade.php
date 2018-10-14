@@ -31,10 +31,18 @@
                       <input type="text"   class="form-control" name="imgURL" value="{{$student->imgURL}}" />
                       </div>
 
+                      @foreach($courses as $course)
 
-                      <div class="form-group">
-                        <img  src="{{$student->imgURL}}" />
+                      <div class="form-check">
+                        <input class="form-check-input" 
+                        name="student_courses[]" type="checkbox"
+                        {{$student->courses->contains($course->id)?'checked':''}}
+                        value="{{$course->id}}" >
+                        <label class="form-check-label" for="defaultCheck1">
+                          {{$course->Name}}
+                        </label>
                       </div>
+                      @endforeach
 
 
 
