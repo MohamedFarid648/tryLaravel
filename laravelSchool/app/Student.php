@@ -5,93 +5,139 @@ namespace App;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Student extends Model
 {
 
-    protected $fillable = ['Name', 'Notes', 'imgURL'];
+  protected $fillable = ['Name', 'Notes', 'imgURL'];
 
-    public static $count = 3;
+        //1.To use SoftDelete
+  use SoftDeletes;
+  protected $dates = ['deleted_at'];
 
-    public function getCount()
-    {
+  public static $count = 3;
 
-        return ++self::$count;
-    }
+  public function getCount()
+  {
 
-    public function courses()
-    {
+    return ++self::$count;
+  }
 
-        return $this->belongsToMany('App\Student', 'student_course', 'student_id', 'course_id')->withTimeStamps();
-    }
+  public function courses()
+  {
+
+    return $this->belongsToMany('App\Course', 'student_course', 'student_id', 'course_id')->withTimeStamps();
+ 
+ 
+/*
+By default, only the model keys will be present on the pivot object. If your pivot table contains extra attributes, you must specify them when defining the relationship:
+
+return $this->belongsToMany('App\course')->withPivot('column1', 'column2');
+
+*/
+  }
 
 
-    public function getAllStudents()
-    {
+  public function getAllStudents()
+  {
 
-        $students = Student::all();//DB::table('students')->select()->get();
-        return $students;
+    $students = Student::all();//DB::table('students')->select()->get();
+    return $students;
 
-    }
+  }
 
 
-    public function getStudent($id)
-    {
-        DB::enableQueryLog();
+  public function getAllDeletedStudents()
+  {
+
+      $deletedStudents = Student::onlyTrashed()->get();
+      //Student::withTrashed()->get();  //will get all 
+      return $deletedStudents;
+  }
+
+  public function getStudent($id)
+  {
+     DB::enableQueryLog();
 
        // $student = DB::table('students')->where(['id' => $id])->get();
         //return $student[0];
-        $student = Student::find($id);
-        $student->courses()->get();
-        dd(DB::getQueryLog());
+    $student = Student::find($id);
+        /*$student->courses()->get();
+            "query" => "select `courses`.*, `student_course`.`student_id` as `pivot_student_id`, `student_course`.`course_id` as `pivot_course_id`, `student_course`.`created_at` as `pivot_created_at`, `student_course`.`updated_at` as `pivot_updated_at` from `courses` inner join `student_course` on `courses`.`id` = `student_course`.`course_id` where `student_course`.`student_id` = ? and `courses`.`deleted_at` is null ◀"
+     */
+        //dd(DB::getQueryLog());
 
-        return $student;
-    }
+    return $student;
+  }
 
 
-    public function addStudent($student_request, $student_courses)
-    {
+  public function addStudent($student_request, $student_courses)
+  {
 
-        $student_db = new Student($student_request);
+    $student_db = new Student($student_request);
         //$student_db->Name='';
-        $student_db->save();
-        $student_db->courses()->attach($student_courses);
+    $student_db->save();
+    $student_db->courses()->attach($student_courses);
 
-    }
+  }
 
 
-    public function editStudent($id, $new_student, $student_courses)
-    {
+  public function editStudent($id, $new_student, $student_courses)
+  {
 
-        DB::enableQueryLog();
+    DB::enableQueryLog();
 
 
         //$row_affected = DB::table('students')->where(['id' => $id])->update($new_student);
-        $student = Student::find($id);
-        $student->Name = $new_student['Name'];
-        $student->Notes = $new_student['Notes'];
-        $student->imgURL = $new_student['imgURL'];
-        $student->save();
+    $student = Student::find($id);
+    $student->Name = $new_student['Name'];
+    $student->Notes = $new_student['Notes'];
+    $student->imgURL = $new_student['imgURL'];
+    $student->save();
 
         //$student->courses()->detach();
         //$student->courses()->attach($student_courses);
-        $student->courses()->sync($student_courses);
-        dd(DB::getQueryLog());
+    $student->courses()->sync($student_courses);
+       // dd(DB::getQueryLog());
 
 
-    }
+  }
 
 
-    public function deleteStudent($id, $Name)
-    {
+  public function deleteStudent($id, $Name)
+  {
 
 
-        $row_affected = DB::table('students')->where(['id' => $id, 'Name' => $Name])->delete();
+    $row_affected = Student::where(['id' => $id, 'Name' => $Name])->delete();
 
-        return $row_affected;
-    }
+    return $row_affected;
+  }
 
 
+
+  public function unDeleteStudent($id)
+  {
+
+      $student = Student::onlyTrashed()->where('id', $id)->get()->first();
+      
+      $student->restore();
+
+      return $student;
+
+      //Course::withTrashed()->where('id', $id)->restore();
+  }
+
+  public function forceDeleteStudent($id)
+  {
+
+      $student = Student::onlyTrashed()->where('id', $id)->get()->first();
+      $student->courses()->detach();
+
+      $student->forceDelete();
+
+      return $student;
+  }
 
 }
 /**

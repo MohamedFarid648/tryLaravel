@@ -89,7 +89,7 @@ Route::group(['prefix' => 'courses'], function () {
 
 
 
-Route::group(['prefix' => 'students'], function () {
+    Route::group(['prefix' => 'students'], function () {
     Route::get('', ['uses' => 'StudentController@getIndex', 'as' => 'studentsHome']);
     Route::get('create', ['uses' => 'StudentController@getCreate', 'as' => 'create_student']);
     Route::post('create', ['uses' => 'StudentController@postCreate', 'as' => 'create_student']);
@@ -97,5 +97,7 @@ Route::group(['prefix' => 'students'], function () {
     Route::post('edit', ['uses' => 'StudentController@postEdit', 'as' => 'post_edit_student']);
     Route::get('delete/{id}', ['uses' => 'StudentController@getDelete', 'as' => 'delete_student']);
     Route::post('delete', ['uses' => 'StudentController@postDelete', 'as' => 'post_delete_student']);
+    Route::get('undelete/{id}', ['uses' => 'StudentController@getUnDelete', 'as' => 'undelete_student']);
+    Route::get('forceDelete/{id}', ['uses' => 'StudentController@getForceDeleteStudent', 'as' => 'force_delete_student']);
 
 });

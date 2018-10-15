@@ -15,7 +15,9 @@ class StudentController extends Controller
 
         $student = new Student();
         $students = $student->getAllStudents();
-        return view('admin.students.index', ['students' => $students]);
+        $deletedStudents=$student->getAllDeletedStudents();
+
+        return view('admin.students.index', ['students' => $students,'deletedStudents'=>$deletedStudents]);
 
     }
 
@@ -89,6 +91,26 @@ class StudentController extends Controller
 
     }
 
+
+    public function getUnDelete($id)
+    {
+        $student = new Student();
+        $student=$student->unDeleteStudent($id);
+        
+        return redirect()->route('studentsHome')->with('Student_information', 'Student (' . $student->Name . ' ) has been already UnDeleted');
+
+    }
+
+    
+    public function getForceDeleteStudent($id)
+    {
+        $student = new Student();
+
+        $student=$student->forceDeleteStudent($id);
+        
+        return redirect()->route('studentsHome')->with('Student_information', 'Student (' . $student->Name . ' ) has been already Deleted for ever');
+
+    }
 
 
 }

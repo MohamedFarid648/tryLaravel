@@ -16,6 +16,10 @@ class AddSoftDelete extends Migration
         Schema::table('courses', function ($table) {
             $table->softDeletes();
         });
+
+        Schema::table('students', function ($table) {
+            $table->softDeletes();
+        });
     }
 
     /**

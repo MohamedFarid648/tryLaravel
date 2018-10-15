@@ -2,7 +2,7 @@
 @section('content')
 
 @include('partial.check_errors')
-
+@if($student)
 <div class="row">
 
     <div class="col-4">
@@ -57,4 +57,10 @@
     </div>
         
 </div>
+
+@else
+@include('errors.admin_error')
+
+@endif
+
 @endsection

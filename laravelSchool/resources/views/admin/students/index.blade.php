@@ -45,6 +45,51 @@
     @else
     <h1> There are not any students till now </h1>
     @endif
+
+
+    <p>
+            <h3 class="text-danger">
+                    Deleted Students
+            </h3>
+        </p>
+    
+        @if (count($deletedStudents))
+    
+    
+        <table class ="table table-striped">
+            <thead>
+            <tr>
+                <th> Name </th>
+                <th> Notes </th>
+                <th> Actions </th>
+            </tr>
+            </thead>
+            <tbody>
+                
+            @foreach ($deletedStudents as $student)
+            @if($student->trashed())
+            <tr> 
+                
+                
+                    <td>{{$student->Name}} </td>
+                    <td>{{$student->Notes}} </td>
+    
+                    <td>
+                    <a href = "{{route('undelete_student',['id'=> $student->id])}}"> UnDelete </a>|
+                    <a href = "{{route('force_delete_student',['id'=> $student->id])}}"> Force Delete </a>
+    
+    
+                    </td>
+            </tr>
+            @endif
+            @endforeach
+            </tbody>
+            </table>
+    
+            @else
+            <h1> There are not any deleted students till now </h1>
+            @endif
+    
     </div>
 
     </div>
