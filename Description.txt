@@ -947,4 +947,29 @@ https://stackoverflow.com/questions/18236294/how-do-i-get-the-query-builder-to-o
 DB::enableQueryLog();
 //Query
 dd(DB::getQueryLog());
+*************************************************************
+49. Mutators : modify data (ex:to lowercase) to save it in DB
+Accessors : modify data from DB to appear in the code well
 
+ex:
+Mutator :
+public funtion setTitleAttribute($value){ 
+  //Automatically will be called when you save title to DB
+
+   $this->attributes['title']=strtolower($value);
+}
+
+Accessor :
+public funtion getTitleAttribute($value){
+  //$value from DB
+  //Automatically will be called when you fetch title from DB
+
+   return strtoupper($value);
+}
+*******************************************************************
+Pagination :
+In Model or Controller :
+Course::where('Name','Ahmed')=>paginate(3);
+
+in View :
+{{$courses->links()}} //output links to your pages 

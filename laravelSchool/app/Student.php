@@ -42,7 +42,7 @@ return $this->belongsToMany('App\course')->withPivot('column1', 'column2');
   public function getAllStudents()
   {
 
-    $students = Student::all();//DB::table('students')->select()->get();
+    $students = Student::where('id','<>',-1)->paginate(2);//DB::table('students')->select()->get();
     return $students;
 
   }

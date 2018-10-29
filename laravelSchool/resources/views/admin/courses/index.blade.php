@@ -47,6 +47,9 @@
                 </tbody>
                 </table>
 
+                {{$courses->links()}}
+
+    
     @else
     <h1> There are not any courses till now </h1>
     @endif
@@ -98,6 +101,13 @@
 
 
     </div>
+
+    </div>
+
+
+    <div class="row">
+
+
 
     </div>
     @endsection

@@ -25,9 +25,10 @@ class Course extends Model
     public static $count = 3;
 
 
-    public function students(){
+    public function students()
+    {
 
-        return $this->belongsToMany('App\Student','student_course','course_id','student_id')->withTimeStamps();
+        return $this->belongsToMany('App\Student', 'student_course', 'course_id', 'student_id')->withTimeStamps();
     }
     public function getCount()
     {
@@ -37,7 +38,7 @@ class Course extends Model
     public function getAllCourses()
     {
 
-        $courses = Course::all();//all(); atatic method coming from Eloquent ORM
+        $courses = Course::where('id', '<>', -1)->paginate(2);//all(); atatic method coming from Eloquent ORM
          //DB::table('courses')->select()->get();//$course->getAllCourses($session);
         return $courses;
 
@@ -138,7 +139,7 @@ class Course extends Model
     {
 
         $course = Course::onlyTrashed()->where('id', $id)->get()->first();
-        
+
         $course->restore();
 
         return $course;
@@ -150,12 +151,44 @@ class Course extends Model
     {
 
         $course = Course::onlyTrashed()->where('id', $id)->get()->first();
-        
+
         $course->forceDelete();
 
         return $course;
     }
 
+
+
+    //Mutator :
+    public function setNameAttribute($value)
+    { 
+  //Automatically will be called when you save title to DB
+
+        $this->attributes['Name'] = strtolower($value);
+    }
+
+//Accessor :
+    public function getNameAttribute($value)
+    {
+  //$value from DB
+  //Automatically will be called when you fetch title from DB
+
+        return strtoupper($value);
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+    
 
 }
  

@@ -42,6 +42,9 @@
                 </tbody>
                 </table>
 
+                {{$students->links()}}
+
+
     @else
     <h1> There are not any students till now </h1>
     @endif
